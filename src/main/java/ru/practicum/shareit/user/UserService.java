@@ -3,45 +3,52 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exeption.AlreadyExistException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorageImpl userStorage;
+    private final UserMapper userMapper;
 
-    public User createUser(User newUser) {
+    public UserDto createUser(UserDto newUser) {
         if (userStorage.getUserStorage().values().stream()
                 .anyMatch(user -> user.getEmail().equals(newUser.getEmail()))) {
             throw new AlreadyExistException("Пользователь с введенным mail уже существует");
         }
-        return userStorage.createUser(newUser);
+        return userMapper.userToDto(userStorage.createUser(userMapper.dtoToUSer(newUser)));
     }
 
-    public User updateUser(Long id, User updateUser) {
-        if (updateUser.getEmail() == null) {
-            updateUser.setEmail(userStorage.getUserStorage().get(id).getEmail());
+    public UserDto updateUser(Long id, UserDto updateUser) {
+        User oldUser = userStorage.getUser(id);
+        if (updateUser.getName() != null) {
+            oldUser.setName(updateUser.getName());
         }
-        if (updateUser.getName() == null) {
-            updateUser.setName(userStorage.getUserStorage().get(id).getName());
-            if (!userStorage.getUserStorage().get(id).getEmail().equals(updateUser.getEmail())) {
+        if (updateUser.getEmail() != null) {
+            if (!oldUser.getEmail().equals(updateUser.getEmail())) {
                 if (userStorage.getUserStorage().values().stream()
                         .anyMatch(user -> user.getEmail().equals(updateUser.getEmail()))) {
                     throw new AlreadyExistException("Пользователь с введенным mail уже существует");
                 }
             }
+            oldUser.setEmail(updateUser.getEmail());
         }
 
-        return userStorage.updateUser(id, updateUser);
+        return userMapper.userToDto(oldUser);
     }
 
-    public User getUser(Long id) {
-        return userStorage.getUser(id);
+    public UserDto getUser(Long id) {
+        return userMapper.userToDto(userStorage.getUser(id));
     }
 
-    public Collection<User> getAllUsers() {
-        return userStorage.getAllUsers();
+    public Collection<UserDto> getAllUsers() {
+        return userStorage.getAllUsers().stream()
+                .map(userMapper::userToDto)
+                .collect(Collectors.toList());
     }
 
     public void deleteUser(Long id) {

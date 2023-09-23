@@ -20,12 +20,6 @@ public class UserStorageImpl implements UserStorage {
         return newUser;
     }
 
-    @Override
-    public User updateUser(Long id, User updateUser) {
-        updateUser.setId(id);
-        userStorage.put(id, updateUser);
-        return updateUser;
-    }
 
     @Override
     public User getUser(Long id) {
