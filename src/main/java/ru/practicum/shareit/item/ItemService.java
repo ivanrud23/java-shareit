@@ -21,7 +21,7 @@ public class ItemService {
     private final UserStorage userStorage;
     private final ItemMapper itemMapper;
 
-    public ItemDto createItem(Item newItem, Long ownerId) {
+    public ItemDto createItem(ItemDto newItem, Long ownerId) {
         if (userStorage.getUser(ownerId) == null) {
             throw new NoDataException("Пользователь не существует");
         }
@@ -34,11 +34,11 @@ public class ItemService {
         if (newItem.getDescription() == null) {
             throw new ValidationException("Не задано описание");
         }
-        return itemMapper.itemFromDto(itemStorage.createItem(newItem, ownerId));
+        return itemMapper.itemToItemDto(itemStorage.createItem(itemMapper.itemDtoToItem(newItem, ownerId)));
     }
 
-    public ItemDto updateItem(Long itemId, Item newItem, Long ownerId) {
-        Item oldItem = itemStorage.getItemById(itemId);
+    public ItemDto updateItem(Long itemId, ItemDto newItem, Long ownerId) {
+        Item foundItem = itemStorage.getItemById(itemId);
         if (userStorage.getUser(ownerId) == null) {
             throw new NoDataException("Пользователь не существует");
         }
@@ -46,25 +46,25 @@ public class ItemService {
             throw new NoDataException("Выбранный пользователь не является владельцем");
         }
         if (newItem.getName() != null) {
-            oldItem.setName(newItem.getName());
+            foundItem.setName(newItem.getName());
         }
         if (newItem.getDescription() != null) {
-            oldItem.setDescription(newItem.getDescription());
+            foundItem.setDescription(newItem.getDescription());
         }
         if (newItem.getAvailable() != null) {
-            oldItem.setAvailable(newItem.getAvailable());
+            foundItem.setAvailable(newItem.getAvailable());
         }
 
-        return itemMapper.itemFromDto(oldItem);
+        return itemMapper.itemToItemDto(foundItem);
     }
 
     public ItemDto getItemById(Long itemId) {
-        return itemMapper.itemFromDto(itemStorage.getItemById(itemId));
+        return itemMapper.itemToItemDto(itemStorage.getItemById(itemId));
     }
 
     public List<ItemDto> getAllItemByOwner(Long ownerId) {
         return itemStorage.getAllItemByOwner(ownerId).stream()
-                .map(itemMapper::itemFromDto)
+                .map(itemMapper::itemToItemDto)
                 .collect(Collectors.toList());
     }
 
@@ -73,7 +73,7 @@ public class ItemService {
             return new ArrayList<>();
         }
         return itemStorage.searchItem(request).stream()
-                .map(itemMapper::itemFromDto)
+                .map(itemMapper::itemToItemDto)
                 .collect(Collectors.toList());
     }
 

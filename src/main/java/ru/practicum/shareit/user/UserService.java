@@ -28,16 +28,13 @@ public class UserService {
         if (updateUser.getName() != null) {
             oldUser.setName(updateUser.getName());
         }
-        if (updateUser.getEmail() != null) {
-            if (!oldUser.getEmail().equals(updateUser.getEmail())) {
-                if (userStorage.getUserStorage().values().stream()
-                        .anyMatch(user -> user.getEmail().equals(updateUser.getEmail()))) {
-                    throw new AlreadyExistException("Пользователь с введенным mail уже существует");
-                }
+        if (updateUser.getEmail() != null && !oldUser.getEmail().equals(updateUser.getEmail())) {
+            if (userStorage.getUserStorage().values().stream()
+                    .anyMatch(user -> user.getEmail().equals(updateUser.getEmail()))) {
+                throw new AlreadyExistException("Пользователь с введенным mail уже существует");
             }
             oldUser.setEmail(updateUser.getEmail());
         }
-
         return userMapper.userToDto(oldUser);
     }
 

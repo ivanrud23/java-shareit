@@ -21,9 +21,8 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public Item createItem(Item newItem, Long ownerId) {
+    public Item createItem(Item newItem) {
         newItem.setId(counter());
-        newItem.setOwnerId(ownerId);
         itemStorage.put(newItem.getId(), newItem);
         return newItem;
     }
