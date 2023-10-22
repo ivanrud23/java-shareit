@@ -27,8 +27,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponseDto createBooking(BookingRequestDto bookingDto, Long booker) {
         User bookerUser = userRepository.findById(booker).orElseThrow(() -> new NoDataException("Нет такого владельца"));
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NoDataException("Нет такого Item"));
-        Long itemOwnerId = item.getOwnerId();
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NoDataException("Нет такого вещи"));
+        Long itemOwnerId = item.getOwner().getId();
 
         if (booker == itemOwnerId) {
             throw new NoDataException("Букер не может быть владельцем");
@@ -50,14 +50,13 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingResponseDto updateBookingApprove(Long bookingId, Boolean approved, Long userId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NoDataException(""));
-        Item item = booking.getItem();
-        if (booking.getItem().getOwnerId() != userId) {
-            throw new NoDataException("");
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NoDataException("Бронирование не существует"));
+        if (booking.getItem().getOwner().getId() != userId) {
+            throw new NoDataException("Только владелец может обновлять статус бронирования");
         }
         if (approved) {
             if (booking.getStatus().equals(BookingStatus.APPROVED)) {
-                throw new ValidationException("");
+                throw new ValidationException("Статус бронирование уже подтверждён");
             }
             booking.setStatus(BookingStatus.APPROVED);
         } else {
@@ -68,11 +67,11 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto getBookingById(Long bookingId, Long userId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NoDataException(""));
-        if (booking.getBooker().getId() != userId && booking.getItem().getOwnerId() != userId) {
-            throw new NoDataException("");
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NoDataException("Бронирование не существует"));
+        if (booking.getBooker().getId() != userId && booking.getItem().getOwner().getId() != userId) {
+            throw new NoDataException("Только владелец или букер могут получить данные бронирования");
         }
-        return BookingMapper.mapToBookingResponseDto(bookingRepository.findById(bookingId).orElseThrow(() -> new NoDataException("")));
+        return BookingMapper.mapToBookingResponseDto(bookingRepository.findById(bookingId).orElseThrow(() -> new NoDataException("Бронирование не существует")));
     }
 
     @Override
@@ -85,104 +84,111 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponseDto> getAllBookingByBookerId(String stateStr, Long bookerId) {
+        BookingState state;
         try {
-            BookingState state = BookingState.valueOf(stateStr);
+            state = BookingState.valueOf(stateStr);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
+        }
 
-            if (userRepository.findAll().stream()
-                    .noneMatch(user -> user.getId() == bookerId)) {
-                throw new NoDataException("");
-            }
-            if (state == BookingState.ALL) {
-                return bookingRepository.findByBooker_Id(bookerId).stream()
+        if (userRepository.findAll().stream()
+                .noneMatch(user -> user.getId() == bookerId)) {
+            throw new NoDataException("Пользователь не сделал ни одной брони");
+        }
+        switch (state) {
+            case ALL:
+                return bookingRepository.findByBookerId(bookerId).stream()
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else if (state == BookingState.CURRENT) {
-                return bookingRepository.findByBooker_Id(bookerId).stream()
+            case CURRENT:
+                return bookingRepository.findByBookerId(bookerId).stream()
                         .filter(booking -> booking.getStart().isBefore(LocalDateTime.now())
                                 && booking.getEnd().isAfter(LocalDateTime.now()))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else if (state == BookingState.PAST) {
-                return bookingRepository.findByBooker_Id(bookerId).stream()
+            case PAST:
+                return bookingRepository.findByBookerId(bookerId).stream()
                         .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else if (state == BookingState.FUTURE) {
-                return bookingRepository.findByBooker_Id(bookerId).stream()
+            case FUTURE:
+                return bookingRepository.findByBookerId(bookerId).stream()
                         .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else if (state == BookingState.WAITING) {
-                return bookingRepository.findByBooker_Id(bookerId).stream()
+            case WAITING:
+                return bookingRepository.findByBookerId(bookerId).stream()
                         .filter(booking -> booking.getStatus().equals(BookingStatus.WAITING))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else {
-                return bookingRepository.findByBooker_Id(bookerId).stream()
+            default:
+                return bookingRepository.findByBookerId(bookerId).stream()
                         .filter(booking -> booking.getStatus().equals(BookingStatus.REJECTED))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            }
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
+
     }
 
     @Override
     public List<BookingResponseDto> getAllBookingByOwnerId(String stateStr, Long ownerId) {
+        BookingState state;
         try {
-            BookingState state = BookingState.valueOf(stateStr);
-            if (userRepository.findAll().stream()
-                    .noneMatch(user -> user.getId() == ownerId)) {
-                throw new NoDataException("");
-            }
-            if (state == BookingState.ALL) {
+            state = BookingState.valueOf(stateStr);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
+        }
+        if (userRepository.findAll().stream()
+                .noneMatch(user -> user.getId() == ownerId)) {
+            throw new NoDataException("Только владелец может получить данные бронирования");
+        }
+
+        switch (state) {
+            case ALL:
                 return bookingRepository.findByItemOwnerId(ownerId).stream()
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else if (state == BookingState.CURRENT) {
+            case CURRENT:
                 return bookingRepository.findByItemOwnerId(ownerId).stream()
                         .filter(booking -> booking.getStart().isBefore(LocalDateTime.now())
                                 && booking.getEnd().isAfter(LocalDateTime.now()))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else if (state == BookingState.PAST) {
+            case PAST:
                 return bookingRepository.findByItemOwnerId(ownerId).stream()
                         .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else if (state == BookingState.FUTURE) {
+            case FUTURE:
                 return bookingRepository.findByItemOwnerId(ownerId).stream()
                         .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else if (state == BookingState.WAITING) {
+            case WAITING:
                 return bookingRepository.findByItemOwnerId(ownerId).stream()
                         .filter(booking -> booking.getStatus().equals(BookingStatus.WAITING))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
-            } else {
+            default:
                 return bookingRepository.findByItemOwnerId(ownerId).stream()
                         .filter(booking -> booking.getStatus().equals(BookingStatus.REJECTED))
                         .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .map(BookingMapper::mapToBookingResponseDto)
                         .collect(Collectors.toList());
 
-            }
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
+
     }
 
 }

@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.BookingItemDto;
+import ru.practicum.shareit.user.User;
 
 import java.util.List;
 
@@ -18,12 +19,12 @@ public class ItemMapper {
         );
     }
 
-    public static Item mapToItem(ItemDto itemDto, Long ownerId) {
+    public static Item mapToItem(ItemDto itemDto, User owner) {
         Item item = new Item();
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
-        item.setOwnerId(ownerId);
+        item.setOwner(owner);
         return item;
     }
 

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.exeption.NoDataException;
 import ru.practicum.shareit.exeption.ValidationException;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
@@ -41,16 +42,17 @@ public class ItemServiceImpl implements ItemService {
                 .noneMatch(user -> user.getId() == ownerId)) {
             throw new NoDataException("Пользователь не существует");
         }
+        User owner = userRepository.findById(ownerId).orElseThrow(() -> new NoDataException("Пользователь не существует"));
 
 
-        return ItemMapper.mapToItemDto(repository.save(ItemMapper.mapToItem(newItem, ownerId)));
+        return ItemMapper.mapToItemDto(repository.save(ItemMapper.mapToItem(newItem, owner)));
     }
 
     @Transactional
     @Override
     public ItemResponseDto updateItem(Long itemId, ItemDto newItem, Long userId) {
-        Item foundItem = repository.findById(itemId).orElseThrow(() -> new NoDataException(""));
-        if (foundItem.getOwnerId() != userId) {
+        Item foundItem = repository.findById(itemId).orElseThrow(() -> new NoDataException("Вещь не существует"));
+        if (foundItem.getOwner().getId() != userId) {
             throw new NoDataException("Выбранный пользователь не является владельцем");
         }
         if (newItem.getName() != null) {
@@ -70,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemResponseDto> getAllItemsWithBooking(Long userId) {
-        List<Item> itemsList = repository.getAllItemByOwnerId(userId);
+        List<Item> itemsList = repository.findByOwnerId(userId);
         return itemsList.stream()
                 .map(item -> getItemByIdResponse(item.getId(), userId))
                 .collect(Collectors.toList());
@@ -78,25 +80,17 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemResponseDto getItemByIdResponse(Long itemId, Long userId) {
-        Item item = repository.findById(itemId).orElseThrow(() -> new NoDataException(""));
+        Item item = repository.findById(itemId).orElseThrow(() -> new NoDataException("Вещь не существует"));
         Optional<Booking> last = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusNotOrderByStartDesc(itemId, LocalDateTime.now(), BookingStatus.REJECTED);
         Optional<Booking> next = bookingRepository.findFirstByItemIdAndStartAfterAndStatusNotOrderByStart(itemId, LocalDateTime.now(), BookingStatus.REJECTED);
         BookingItemDto lastBooking;
         BookingItemDto nextBooking;
-        if (item.getOwnerId() != userId) {
+        if (item.getOwner().getId() != userId) {
             lastBooking = null;
             nextBooking = null;
         } else {
-            if (last.isPresent()) {
-                lastBooking = BookingMapper.mapToBookerItemDto(last.get());
-            } else {
-                lastBooking = null;
-            }
-            if (next.isPresent()) {
-                nextBooking = BookingMapper.mapToBookerItemDto(next.get());
-            } else {
-                nextBooking = null;
-            }
+            lastBooking = last.map(BookingMapper::mapToBookerItemDto).orElse(null);
+            nextBooking = next.map(BookingMapper::mapToBookerItemDto).orElse(null);
         }
         List<CommentDto> commentDtoList = commentRepository.findByItemId(itemId).stream()
                 .map(CommentMapper::mapToCommentDto)
@@ -107,7 +101,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAllItemByOwner(Long ownerId) {
-        return repository.getAllItemByOwnerId(ownerId).stream()
+        return repository.findByOwnerId(ownerId).stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
     }
@@ -126,19 +120,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto createComment(Long itemId, CommentDto commentDto, Long userId) {
         if (commentDto.getText().isBlank()) {
-            throw new ValidationException("");
+            throw new ValidationException("Комментарий не может быть пустым");
         }
         if (bookingRepository.findByItemId(itemId).stream()
                 .anyMatch(booking -> booking.getBooker().getId() == userId &&
                         booking.getStart().isBefore(LocalDateTime.now()))) {
             Comment comment = new Comment();
             comment.setText(commentDto.getText());
-            comment.setItem(repository.findById(itemId).orElseThrow(() -> new NoDataException("")));
-            comment.setAuthor(userRepository.findById(userId).orElseThrow(() -> new NoDataException("")));
+            comment.setItem(repository.findById(itemId).orElseThrow(() -> new NoDataException("Вещь не существует")));
+            comment.setAuthor(userRepository.findById(userId).orElseThrow(() -> new NoDataException("Пользователь не существует")));
             comment.setCreated(LocalDateTime.now());
             return CommentMapper.mapToCommentDto(commentRepository.save(comment));
         } else {
-            throw new ValidationException("");
+            throw new ValidationException("Пользователь не существует или еще не пользовался вещью");
         }
     }
 

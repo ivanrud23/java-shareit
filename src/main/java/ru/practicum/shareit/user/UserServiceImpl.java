@@ -18,11 +18,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto createUser(UserDto userDto) {
-//        if (repository.findAll().stream()
-//                .anyMatch(user -> user.getEmail().equals(userDto.getEmail()))) {
-//            throw new AlreadyExistException("Пользователь с введенным mail уже существует");
-//        }
-
         return UserMapper.userToDto(repository.save(UserMapper.dtoToUSer(userDto)));
 
     }
@@ -30,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto updateUser(Long id, UserDto userDto) {
-        User oldUser = repository.findById(id).orElseThrow(() -> new NoDataException(""));
+        User oldUser = repository.findById(id).orElseThrow(() -> new NoDataException("Пользователь не существует"));
         if (userDto.getName() != null) {
             oldUser.setName(userDto.getName());
         }
@@ -46,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser(Long id) {
-        return UserMapper.userToDto(repository.findById(id).orElseThrow(() -> new NoDataException("")));
+        return UserMapper.userToDto(repository.findById(id).orElseThrow(() -> new NoDataException("Пользователь не существует")));
     }
 
     @Override

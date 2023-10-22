@@ -21,7 +21,7 @@ public class BookingController {
 
     }
 
-    @PatchMapping("/{bookingId}{approved}")
+    @PatchMapping("/{bookingId}")
     public BookingResponseDto confirmRejectBooking(@PathVariable Long bookingId, @RequestParam Boolean approved,
                                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
         return bookingService.updateBookingApprove(bookingId, approved, userId);
@@ -40,7 +40,7 @@ public class BookingController {
     }
 
 
-    @GetMapping("/owner{state}")
+    @GetMapping("/owner")
     public List<BookingResponseDto> getAllBookingByItemOwnerId(@RequestParam(defaultValue = "ALL") String state,
                                                                @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return bookingService.getAllBookingByOwnerId(state, ownerId);

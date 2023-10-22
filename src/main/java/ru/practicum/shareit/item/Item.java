@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 
@@ -27,14 +28,14 @@ public class Item {
     @Column
     private Boolean available;
 
-    @Column
-    private Long ownerId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User owner;
 
     @Column
     private Long requestId;
 
     private Boolean request;
 
-//    private List<Integer> commentId;
 
 }
