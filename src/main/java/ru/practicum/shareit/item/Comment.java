@@ -31,9 +31,10 @@ public class Comment {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "author_id")
     private User author;
 
+    @Column
     private LocalDateTime created;
 
 }

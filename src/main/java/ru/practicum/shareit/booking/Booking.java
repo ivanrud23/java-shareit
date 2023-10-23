@@ -34,9 +34,10 @@ public class Booking {
     private Item item;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "booker_id")
     private User booker;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private BookingStatus status = BookingStatus.WAITING;
 

@@ -10,8 +10,6 @@ interface ItemService {
 
     List<ItemResponseDto> getAllItemsWithBooking(Long userId);
 
-//    ItemResponseDto getItemWithBooking(Long itemId, Long ownerId);
-
     ItemResponseDto getItemByIdResponse(Long itemId, Long userId);
 
     List<ItemDto> getAllItemByOwner(Long ownerId);

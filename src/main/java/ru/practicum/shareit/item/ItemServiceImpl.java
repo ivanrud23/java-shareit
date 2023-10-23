@@ -72,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemResponseDto> getAllItemsWithBooking(Long userId) {
-        List<Item> itemsList = repository.findByOwnerId(userId);
+        List<Item> itemsList = repository.findByOwnerIdOrderById(userId);
         return itemsList.stream()
                 .map(item -> getItemByIdResponse(item.getId(), userId))
                 .collect(Collectors.toList());
@@ -101,7 +101,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAllItemByOwner(Long ownerId) {
-        return repository.findByOwnerId(ownerId).stream()
+        return repository.findByOwnerIdOrderById(ownerId).stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
     }
@@ -117,6 +117,7 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public CommentDto createComment(Long itemId, CommentDto commentDto, Long userId) {
         if (commentDto.getText().isBlank()) {

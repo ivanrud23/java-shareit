@@ -29,13 +29,10 @@ public class Item {
     private Boolean available;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @Column
     private Long requestId;
-
-    private Boolean request;
-
 
 }
