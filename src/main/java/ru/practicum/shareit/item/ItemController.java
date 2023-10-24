@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.List;
 
@@ -16,28 +15,37 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto createItem(@RequestBody ItemDto newItem, @RequestHeader("X-Sharer-User-Id") long ownerId) {
-        return itemService.createItem(newItem, ownerId);
+    public ItemDto createItem(@RequestBody ItemDto newItem, @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.createItem(newItem, userId);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto updateItem(@PathVariable("id") Long itemId, @RequestBody ItemDto newItem, @RequestHeader("X-Sharer-User-Id") long ownerId) {
+    public ItemResponseDto updateItem(@PathVariable("id") Long itemId, @RequestBody ItemDto newItem, @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return itemService.updateItem(itemId, newItem, ownerId);
     }
 
+
     @GetMapping("/{id}")
-    public ItemDto getItemById(@PathVariable("id") Long itemId) {
-        return itemService.getItemById(itemId);
+    public ItemResponseDto getItemByIdResponse(@PathVariable("id") Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.getItemByIdResponse(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemByOwner(@RequestHeader("X-Sharer-User-Id") long ownerId) {
-        return itemService.getAllItemByOwner(ownerId);
+    public List<ItemResponseDto> getAllItemsWithBooking(@RequestHeader("X-Sharer-User-Id") long ownerId) {
+        return itemService.getAllItemsWithBooking(ownerId);
     }
+
 
     @GetMapping("/search")
     public List<ItemDto> searchItem(@RequestParam("text") String request) {
         return itemService.searchItem(request);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@PathVariable("itemId") Long itemId,
+                                    @RequestBody CommentDto commentDto,
+                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.createComment(itemId, commentDto, userId);
     }
 
 }
