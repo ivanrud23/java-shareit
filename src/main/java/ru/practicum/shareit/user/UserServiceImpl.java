@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exeption.AlreadyExistException;
 import ru.practicum.shareit.exeption.NoDataException;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<UserDto> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return repository.findAll().stream()
                 .map(UserMapper::userToDto)
                 .collect(Collectors.toList());
