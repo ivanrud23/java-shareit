@@ -4,14 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@Transactional
 class UserServiceTest {
 
     @Autowired
@@ -22,7 +20,6 @@ class UserServiceTest {
 
     private final UserDto userDto = new UserDto(1L, "john.doe@mail.com", "John");
     private final UserDto updateUserDto = new UserDto(1L, "Update_email", "Update_name");
-
 
     @Test
     @DirtiesContext

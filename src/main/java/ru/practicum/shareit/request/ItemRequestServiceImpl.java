@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exeption.NoDataException;
-import ru.practicum.shareit.exeption.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -42,9 +41,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoResponse> getItemRequestByOtherUser(Long userId, Integer from, Integer size) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException("Не задан стартовый элемент или количество выводимых элементов");
-        }
 
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         return itemRequestRepository.findAll(page)

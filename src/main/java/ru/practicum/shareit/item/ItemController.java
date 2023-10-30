@@ -1,8 +1,10 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -10,6 +12,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/items")
+@Validated
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
@@ -31,17 +34,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemResponseDto> getAllItemsWithBooking(@RequestHeader("X-Sharer-User-Id") long ownerId,
-                                                        @RequestParam(defaultValue = "0") Integer from,
-                                                        @RequestParam(defaultValue = "10") Integer size) {
+    public List<ItemResponseDto> getAllItemsWithBooking(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                                        @RequestParam(defaultValue = "0") @Min(value = 0, message = "Не задан стартовый элемент") Integer from,
+                                                        @RequestParam(defaultValue = "10") @Min(value = 1, message = "Не задано количество выводимых элементов") Integer size) {
         return itemService.getAllItems(ownerId, from, size);
     }
 
 
     @GetMapping("/search")
     public List<ItemDto> searchItem(@RequestParam("text") String request,
-                                    @RequestParam(defaultValue = "0") Integer from,
-                                    @RequestParam(defaultValue = "10") Integer size) {
+                                    @RequestParam(defaultValue = "0") @Min(value = 0, message = "Не задан стартовый элемент") Integer from,
+                                    @RequestParam(defaultValue = "10") @Min(value = 1, message = "Не задано количество выводимых элементов") Integer size) {
         return itemService.searchItem(request, from, size);
     }
 

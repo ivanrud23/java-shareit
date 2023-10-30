@@ -85,9 +85,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponseDto> getAllBookingByBookerId(String stateStr, Long bookerId, Integer from, Integer size) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException("Не задан стартовый элемент или количество выводимых элементов");
-        }
 
         BookingState state;
         try {
@@ -141,9 +138,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponseDto> getAllBookingByOwnerId(String stateStr, Long ownerId, Integer from, Integer size) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException("Не задан стартовый элемент или количество выводимых элементов");
-        }
+
         BookingState state;
         try {
             state = BookingState.valueOf(stateStr);

@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exeption.ValidationException;
 import ru.practicum.shareit.user.UserDto;
 import ru.practicum.shareit.user.UserService;
 
@@ -15,10 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@Transactional
 class ItemRequestServiceTest {
 
     @Autowired
@@ -75,21 +71,6 @@ class ItemRequestServiceTest {
         assertEquals(actualResult.size(), 2);
     }
 
-    @Test
-    @DirtiesContext
-    void getItemRequestByOtherUser_wrongPagination() {
-        userService.createUser(userDto);
-        userService.createUser(userDto2);
-        itemRequestService.createItemRequest(itemRequestDto, 1L);
-        ItemRequestDto itemRequestDto2 = new ItemRequestDto(
-                "Give me please something2",
-                LocalDateTime.of(2014, Month.APRIL, 8, 12, 30));
-        itemRequestService.createItemRequest(itemRequestDto2, 1L);
-        Exception exception = assertThrows(ValidationException.class, () -> {
-            itemRequestService.getItemRequestByOtherUser(2L, 0, 0);
-        });
-        assertEquals(exception.getMessage(), "Не задан стартовый элемент или количество выводимых элементов");
-    }
 
     @Test
     @DirtiesContext

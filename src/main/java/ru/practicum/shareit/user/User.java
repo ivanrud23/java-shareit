@@ -24,5 +24,4 @@ public class User {
     @NotBlank(message = "login is mandatory")
     @Column(name = "name")
     private String name;
-
 }

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemResponseDto> getAllItems(Long userId, Integer from, Integer size) {
         PageRequest page = PageRequest.of(from / size, size);
-        Page<Item> itemsList = repository.findByOwnerIdOrderById(userId, page);
+        List<Item> itemsList = repository.findByOwnerIdOrderById(userId, page);
         return itemsList.stream()
                 .map(item -> getItemById(item.getId(), userId))
                 .collect(Collectors.toList());

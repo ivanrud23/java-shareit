@@ -1,9 +1,11 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -11,6 +13,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/bookings")
+@Validated
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
@@ -36,8 +39,8 @@ public class BookingController {
     @GetMapping
     public List<BookingResponseDto> getAllBookingByBookerId(@RequestParam(defaultValue = "ALL") String state,
                                                             @RequestHeader("X-Sharer-User-Id") Long bookerId,
-                                                            @RequestParam(defaultValue = "0") Integer from,
-                                                            @RequestParam(defaultValue = "10") Integer size) {
+                                                            @RequestParam(defaultValue = "0") @Min(value = 0, message = "Не задан стартовый элемент") Integer from,
+                                                            @RequestParam(defaultValue = "10") @Min(value = 1, message = "Не задано количество выводимых элементов") Integer size) {
         return bookingService.getAllBookingByBookerId(state, bookerId, from, size);
     }
 
@@ -45,8 +48,8 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingResponseDto> getAllBookingByItemOwnerId(@RequestParam(defaultValue = "ALL") String state,
                                                                @RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                                               @RequestParam(defaultValue = "0") Integer from,
-                                                               @RequestParam(defaultValue = "10") Integer size) {
+                                                               @RequestParam(defaultValue = "0") @Min(value = 0, message = "Не задан стартовый элемент") Integer from,
+                                                               @RequestParam(defaultValue = "10") @Min(value = 1, message = "Не задано количество выводимых элементов") Integer size) {
         return bookingService.getAllBookingByOwnerId(state, ownerId, from, size);
     }
 

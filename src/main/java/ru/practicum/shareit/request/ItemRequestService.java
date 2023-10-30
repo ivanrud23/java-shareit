@@ -1,11 +1,9 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 public interface ItemRequestService {
-    @Transactional
+
     ItemRequestDtoResponse createItemRequest(ItemRequestDto itemRequestDto, Long requesterId);
 
     List<ItemRequestDtoResponse> getAllItemRequestByUser(Long userId);
