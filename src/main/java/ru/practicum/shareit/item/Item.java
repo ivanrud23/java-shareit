@@ -19,20 +19,20 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
-    @Column
+    @Column(name = "description")
     private String description;
 
-    @Column
+    @Column(name = "available")
     private Boolean available;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @Column
+    @Column(name = "requestId")
     private Long requestId;
 
 }

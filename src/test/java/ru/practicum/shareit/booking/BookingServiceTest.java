@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class BookingServiceTest {
 
     @Autowired
@@ -43,7 +44,6 @@ class BookingServiceTest {
             new ItemForBookingDto());
 
     @Test
-    @DirtiesContext
     void createBooking() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -56,7 +56,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void createBooking_wrongUser() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -71,7 +70,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void createBooking_notAvailable() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -87,7 +85,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void updateBookingApprove() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -101,7 +98,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void updateBookingApprove_userNotOwner() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -117,7 +113,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getBookingById() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -131,7 +126,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getBookingByItemId() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -149,7 +143,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllBookingByBookerId() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -167,7 +160,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllBookingByOwnerId() {
         userService.createUser(userDto);
         userService.createUser(userDto2);

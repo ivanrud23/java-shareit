@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import ru.practicum.shareit.item.ItemForBookingDto;
@@ -57,7 +56,6 @@ class BookingControllerTest {
     );
 
     @Test
-    @DirtiesContext
     void createBooking() throws Exception {
         when(bookingService.createBooking(any(), any()))
                 .thenReturn(bookingResponseDto);
@@ -75,7 +73,6 @@ class BookingControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void confirmRejectBooking() throws Exception {
         when(bookingService.updateBookingApprove(any(), any(), any()))
                 .thenReturn(bookingResponseDto);
@@ -94,7 +91,6 @@ class BookingControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getBookingById() throws Exception {
         when(bookingService.getBookingById(any(), any()))
                 .thenReturn(bookingResponseDto);
@@ -111,7 +107,6 @@ class BookingControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllBookingByBookerId() throws Exception {
         List<BookingResponseDto> list = new ArrayList<>();
         list.add(bookingResponseDto);
@@ -135,7 +130,6 @@ class BookingControllerTest {
 
 
     @Test
-    @DirtiesContext
     void getAllBookingByItemOwnerId() throws Exception {
         List<BookingResponseDto> list = new ArrayList<>();
         list.add(bookingResponseDto);

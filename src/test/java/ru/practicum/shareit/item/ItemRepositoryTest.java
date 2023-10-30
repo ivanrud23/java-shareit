@@ -20,6 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ItemRepositoryTest {
 
     @Autowired
@@ -32,7 +33,6 @@ class ItemRepositoryTest {
     private ItemRequestRepository itemRequestRepository;
 
     @Test
-    @DirtiesContext
     void findByOwnerIdOrderById() throws Exception {
         UserDto userDto = new UserDto();
         userDto.setEmail("jon@gmail.com");
@@ -63,7 +63,6 @@ class ItemRepositoryTest {
     }
 
     @Test
-    @DirtiesContext
     void findItemByUserText() {
         UserDto userDto = new UserDto();
         userDto.setEmail("jon@gmail.com");

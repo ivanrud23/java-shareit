@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ItemServiceTest {
 
     @Autowired
@@ -56,7 +57,6 @@ class ItemServiceTest {
             new ArrayList<>());
 
     @Test
-    @DirtiesContext
     void createItem() {
         userService.createUser(userDto);
         ItemDto actualItem = itemService.createItem(itemDto, 1L);
@@ -64,7 +64,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void createItem_emptyStatus() {
         userService.createUser(userDto);
         ItemDto itemDtoEmpty = new ItemDto();
@@ -76,7 +75,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void createItem_emptyName() {
         userService.createUser(userDto);
         ItemDto itemDtoEmpty = new ItemDto();
@@ -89,7 +87,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void createItem_emptyDesc() {
         userService.createUser(userDto);
         ItemDto itemDtoEmpty = new ItemDto();
@@ -102,7 +99,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void createItem_incorrectUser() {
         userService.createUser(userDto);
         ItemDto itemDtoEmpty = new ItemDto();
@@ -116,7 +112,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void updateItem() {
         userService.createUser(userDto);
         itemService.createItem(itemDto, 1L);
@@ -125,7 +120,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllItems() {
         userService.createUser(userDto);
         itemService.createItem(itemDto, 1L);
@@ -137,7 +131,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getItemById() {
         userService.createUser(userDto);
         itemService.createItem(itemDto, 1L);
@@ -146,7 +139,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void searchItem() {
         userService.createUser(userDto);
         itemService.createItem(itemDto, 1L);
@@ -156,7 +148,6 @@ class ItemServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void createComment() throws InterruptedException {
         userService.createUser(userDto);
         UserDto userDto2 = new UserDto(2L, "donald.doe@mail.com", "John");

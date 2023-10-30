@@ -3,11 +3,9 @@ package ru.practicum.shareit.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -21,8 +19,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc(printOnlyOnFailure = false)
+
+@WebMvcTest(controllers = UserController.class)
 class UserControllerTest {
 
     @Autowired
@@ -40,7 +38,6 @@ class UserControllerTest {
             "John");
 
     @Test
-    @DirtiesContext
     void createUser() throws Exception {
         when(userService.createUser(any()))
                 .thenReturn(userDto);
@@ -57,7 +54,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void updateUser() throws Exception {
         final UserDto userDtoUpdate = new UserDto();
         userDtoUpdate.setId(1L);
@@ -79,7 +75,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getUser() throws Exception {
         when(userService.getUser(any()))
                 .thenReturn(userDto);
@@ -96,7 +91,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllUsers() throws Exception {
         final UserDto userDto2 = new UserDto(
                 2L,
@@ -123,7 +117,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void deleteUser() throws Exception {
 
         mvc.perform(delete("/users/1")

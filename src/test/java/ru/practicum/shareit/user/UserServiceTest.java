@@ -10,6 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserServiceTest {
 
     @Autowired
@@ -22,14 +23,12 @@ class UserServiceTest {
     private final UserDto updateUserDto = new UserDto(1L, "Update_email", "Update_name");
 
     @Test
-    @DirtiesContext
     void createUser() {
         UserDto actualUser = userService.createUser(userDto);
         assertEquals(userDto, actualUser);
     }
 
     @Test
-    @DirtiesContext
     void updateUser() {
         userService.createUser(userDto);
         UserDto actualUser = userService.updateUser(1L, updateUserDto);
@@ -38,7 +37,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getUser() {
         userService.createUser(userDto);
         UserDto actualUser = userService.getUser(1L);
@@ -47,7 +45,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllUsers() {
         UserDto userDto2 = new UserDto(
                 2L,
@@ -64,11 +61,9 @@ class UserServiceTest {
         List<UserDto> list = userService.getAllUsers();
 
         assertEquals(list.size(), 2);
-
     }
 
     @Test
-    @DirtiesContext
     void deleteUser() {
         UserDto userDto2 = new UserDto(
                 2L,

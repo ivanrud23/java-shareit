@@ -15,6 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ItemRequestServiceTest {
 
     @Autowired
@@ -36,7 +37,6 @@ class ItemRequestServiceTest {
 
 
     @Test
-    @DirtiesContext
     void createItemRequest() {
         userService.createUser(userDto);
         ItemRequestDtoResponse actualResult = itemRequestService.createItemRequest(itemRequestDto, 1L);
@@ -44,7 +44,6 @@ class ItemRequestServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllItemRequestByUser() {
         userService.createUser(userDto);
         itemRequestService.createItemRequest(itemRequestDto, 1L);
@@ -58,7 +57,6 @@ class ItemRequestServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void getItemRequestByOtherUser() {
         userService.createUser(userDto);
         userService.createUser(userDto2);
@@ -73,7 +71,6 @@ class ItemRequestServiceTest {
 
 
     @Test
-    @DirtiesContext
     void getItemRequestById() {
         userService.createUser(userDto);
         itemRequestService.createItemRequest(itemRequestDto, 1L);

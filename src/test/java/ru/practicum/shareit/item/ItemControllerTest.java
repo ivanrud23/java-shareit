@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -80,7 +79,6 @@ class ItemControllerTest {
     );
 
     @Test
-    @DirtiesContext
     void createItem() throws Exception {
         when(itemService.createItem(any(), any()))
                 .thenReturn(itemDto);
@@ -98,7 +96,6 @@ class ItemControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void updateItem() throws Exception {
         when(itemService.updateItem(any(), any(), any()))
                 .thenReturn(itemResponseDto);
@@ -115,7 +112,6 @@ class ItemControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getItemByIdResponse() throws Exception {
         when(itemService.getItemById(any(), any()))
                 .thenReturn(itemResponseDto);
@@ -132,7 +128,6 @@ class ItemControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllItemsWithBooking() throws Exception {
         List<ItemResponseDto> list = new ArrayList<>();
         list.add(itemResponseDto);
@@ -154,7 +149,6 @@ class ItemControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void searchItem() throws Exception {
         List<ItemDto> list = new ArrayList<>();
         list.add(itemDto);
@@ -177,7 +171,6 @@ class ItemControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void createComment() throws Exception {
         when(itemService.createComment(any(), any(), any()))
                 .thenReturn(commentDto);

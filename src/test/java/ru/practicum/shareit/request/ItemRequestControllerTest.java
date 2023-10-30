@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -46,7 +45,6 @@ class ItemRequestControllerTest {
     );
 
     @Test
-    @DirtiesContext
     void createItemRequest() throws Exception {
         when(itemRequestService.createItemRequest(any(), any()))
                 .thenReturn(itemRequestDtoResponse);
@@ -65,7 +63,6 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getItemRequest() throws Exception {
         ItemRequestDtoResponse itemRequestDtoResponse1 = new ItemRequestDtoResponse();
         List<ItemRequestDtoResponse> list = new ArrayList<>();
@@ -88,7 +85,6 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getItemRequestAnotherUser() throws Exception {
         ItemRequestDtoResponse itemRequestDtoResponse1 = new ItemRequestDtoResponse();
         List<ItemRequestDtoResponse> list = new ArrayList<>();
@@ -111,7 +107,6 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @DirtiesContext
     void getItemRequestById() throws Exception {
 
         when(itemRequestService.getItemRequestById(any(), any()))
