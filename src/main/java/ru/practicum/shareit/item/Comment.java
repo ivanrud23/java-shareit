@@ -21,7 +21,7 @@ public class Comment {
     private Long id;
 
     @NotNull
-    @Column
+    @Column(name = "text")
     private String text;
 
     @NotNull
@@ -34,7 +34,7 @@ public class Comment {
     @JoinColumn(name = "author_id")
     private User author;
 
-    @Column
+    @Column(name = "created")
     private LocalDateTime created;
 
 }

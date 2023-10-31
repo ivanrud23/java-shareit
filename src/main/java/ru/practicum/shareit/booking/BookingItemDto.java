@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class BookingItemDto {
     private Long id;
     private Long bookerId;
-
 }
